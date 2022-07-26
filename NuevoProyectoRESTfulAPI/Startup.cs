@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NuevoProyectoRESTfulAPI.Conexion;
 using NuevoProyectoRESTfulAPI.Repos;
 using System;
 using System.Collections.Generic;
@@ -26,8 +28,11 @@ namespace NuevoProyectoRESTfulAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<InstitutoDbContext>(op => op.UseSqlServer(
+                Configuration.GetConnectionString("una_conexion")
+                ));
             services.AddControllers();
-            services.AddScoped<IValorRepository, ImplValorRepository>();
+            services.AddScoped<IEstudianteRepository, ImplEstudianteRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
