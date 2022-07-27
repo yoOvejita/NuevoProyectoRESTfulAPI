@@ -1,5 +1,6 @@
 ﻿using NuevoProyectoRESTfulAPI.Conexion;
 using NuevoProyectoRESTfulAPI.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,6 +14,13 @@ namespace NuevoProyectoRESTfulAPI.Repos
             cont = contexto;
         }
 
+        public void AddEstudiante(Estudiante est)
+        {
+            if(est == null)
+                throw new ArgumentNullException(nameof(est));
+            cont.Estudiantes.Add(est);
+        }
+
         public Estudiante GetEstudianteByCi(int ci)
         {
             return cont.Estudiantes.FirstOrDefault(est => est.ci == ci);
@@ -21,6 +29,11 @@ namespace NuevoProyectoRESTfulAPI.Repos
         public IEnumerable<Estudiante> GetEstudiantes()
         {
             return cont.Estudiantes.ToList();
+        }
+
+        public bool Guardar()
+        {
+            return (cont.SaveChanges() > -1);
         }
     }
 }
