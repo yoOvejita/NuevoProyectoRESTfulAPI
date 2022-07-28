@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Newtonsoft.Json.Serialization;
 
 namespace NuevoProyectoRESTfulAPI
 {
@@ -32,7 +33,9 @@ namespace NuevoProyectoRESTfulAPI
             services.AddDbContext<InstitutoDbContext>(op => op.UseSqlServer(
                 Configuration.GetConnectionString("una_conexion")
                 ));
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(
+                    s => s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver()
+                );
             services.AddScoped<IEstudianteRepository, ImplEstudianteRepository>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }

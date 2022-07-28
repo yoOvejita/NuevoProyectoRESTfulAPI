@@ -5,6 +5,7 @@ using NuevoProyectoRESTfulAPI.DTO;
 using NuevoProyectoRESTfulAPI.Models;
 using NuevoProyectoRESTfulAPI.Repos;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace NuevoProyectoRESTfulAPI.Controllers
 {
@@ -42,5 +43,55 @@ namespace NuevoProyectoRESTfulAPI.Controllers
             EstudianteReadDTO estRetorno = mapper.Map<EstudianteReadDTO>(estudiante);
             return CreatedAtRoute(nameof(getestudiante), new { ci = estRetorno.ci}, estRetorno);
         }
+
+        [HttpPut("{ci}")]
+        public ActionResult updateestudiante(int ci, EstudianteUpdateDTO estUpdateDTO)
+        {
+            Estudiante est = estRepo.GetEstudianteByCi(ci);
+            if (est == null)
+                return NotFound();
+            mapper.Map(estUpdateDTO, est);
+            estRepo.UpdateEstudiante(est);
+            estRepo.Guardar();
+            return NoContent();
+        }
+
+        /*
+        [
+            {
+                "op":"replace",
+                "path":"/nombre_de_atributo",
+                "value": "valor nuevo"
+            }
+        ]
+        */
+        [HttpPatch("{ci}")]
+        public ActionResult updatepatchestudiante(int ci, JsonPatchDocument<EstudianteUpdateDTO> estPatch)
+        {
+            Estudiante est = estRepo.GetEstudianteByCi(ci);
+            if (est == null)
+                return NotFound();
+            EstudianteUpdateDTO estParaPatch = mapper.Map<EstudianteUpdateDTO>(est);
+            estPatch.ApplyTo(estParaPatch, ModelState);
+            if (!TryValidateModel(estParaPatch))
+                return ValidationProblem(ModelState);
+            mapper.Map(estParaPatch, est);
+            estRepo.UpdateEstudiante(est);
+            estRepo.Guardar();
+            return NoContent();
+        }
+
+        [HttpDelete("{ci}")]
+        public ActionResult eliminarstudiante(int ci)
+        {
+            Estudiante est = estRepo.GetEstudianteByCi(ci);
+            if (est == null)
+                return NotFound();
+            
+            estRepo.EliminarEstudiante(est);
+            estRepo.Guardar();
+            return NoContent();
+        }
     }
 }
+

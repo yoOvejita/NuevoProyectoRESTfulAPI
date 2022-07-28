@@ -9,5 +9,7 @@ namespace NuevoProyectoRESTfulAPI.Repos
         Estudiante GetEstudianteByCi(int ci);
         void AddEstudiante(Estudiante est);
         bool Guardar();
+        void UpdateEstudiante(Estudiante est);
+        void EliminarEstudiante(Estudiante est);
     }
 }

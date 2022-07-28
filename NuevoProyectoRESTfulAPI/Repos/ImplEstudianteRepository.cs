@@ -35,5 +35,16 @@ namespace NuevoProyectoRESTfulAPI.Repos
         {
             return (cont.SaveChanges() > -1);
         }
+
+        public void UpdateEstudiante(Estudiante est)
+        {
+            //throw new NotImplementedException();
+        }
+        public void EliminarEstudiante(Estudiante est)
+        {
+            if(est == null)
+                throw new ArgumentNullException();
+            cont.Estudiantes.Remove(est);
+        }
     }
 }
