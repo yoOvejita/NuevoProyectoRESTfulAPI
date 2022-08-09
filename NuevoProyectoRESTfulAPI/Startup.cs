@@ -15,14 +15,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Newtonsoft.Json.Serialization;
+using NuevoProyectoRESTfulAPI.ComunicacionSync.Http;
 
 namespace NuevoProyectoRESTfulAPI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment entorno;
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            entorno = environment;
         }
 
         public IConfiguration Configuration { get; }
@@ -30,9 +33,20 @@ namespace NuevoProyectoRESTfulAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<InstitutoDbContext>(op => op.UseSqlServer(
-                Configuration.GetConnectionString("una_conexion")
+            if(entorno.IsProduction()){
+                services.AddDbContext<InstitutoDbContext>(op => 
+                op.UseSqlServer(Configuration.GetConnectionString("InstitutoProd")));
+            }else{
+                var servidor = Configuration["DDBBservidor"] ?? "192.168.1.254";
+                var puerto = Configuration["DDBBpuerto"] ?? "1433";
+                var usuario = Configuration["DDBBusuario"] ?? "ConexionParaAPI";
+                var password = Configuration["DDBBpassword"] ?? "123456";
+                var ddbb = Configuration["DDBB"] ?? "Instituto X";
+                services.AddDbContext<InstitutoDbContext>(op => op.UseSqlServer(
+                    $"Server={servidor},{puerto};DataBase={ddbb};User={usuario};Password={password}"
                 ));
+            }
+            services.AddHttpClient<ICampusHistorialCliente, ImplHttpCampusHistorialCliente>();
             services.AddControllers().AddNewtonsoftJson(
                     s => s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver()
                 );

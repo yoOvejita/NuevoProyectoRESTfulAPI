@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nombrecito-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nombrecitoservice
+  template:
+    metadata:
+      labels:
+        app: nombrecitoservice
+    spec:
+      containers:
+        - name: nombrecitoservice
+          image: rusoknuevo
+          imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: instituto-clusterip-service
+spec:
+  type: ClusterIP
+  selector:
+    app: nombrecitoservice
+  ports:
+    - name: nombrecitoservice
+      protocol: TCP
+      port: 80
+      targetPort: 80

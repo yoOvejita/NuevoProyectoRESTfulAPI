@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>nombre_loco</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,4 +19,12 @@
   </ItemGroup>
 
 
+  <ItemGroup>
+    <None Remove="ComunicacionSync\" />
+    <None Remove="ComunicacionSync\Http\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ComunicacionSync\" />
+    <Folder Include="ComunicacionSync\Http\" />
+  </ItemGroup>
 </Project>
