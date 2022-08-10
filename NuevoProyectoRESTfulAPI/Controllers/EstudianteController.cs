@@ -6,6 +6,10 @@ using NuevoProyectoRESTfulAPI.Models;
 using NuevoProyectoRESTfulAPI.Repos;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.JsonPatch;
+using System;
+using NuevoProyectoRESTfulAPI.ComunicacionSync.Http;
+using System.Threading.Tasks;
+using NuevoProyectoRESTfulAPI.ComunicacionAsync;
 
 namespace NuevoProyectoRESTfulAPI.Controllers
 {
@@ -15,10 +19,15 @@ namespace NuevoProyectoRESTfulAPI.Controllers
     {
         private readonly IEstudianteRepository estRepo;
         private readonly IMapper mapper;
-        public EstudianteController(IEstudianteRepository estRepo, IMapper mapper)
+        private readonly ICampusHistorialCliente campusHistorialCliente;
+        private readonly IBusDeMensajesCliente busDeMensajesCliente;
+        public EstudianteController(IEstudianteRepository estRepo, IMapper mapper,
+            ICampusHistorialCliente campusHistorialCliente, IBusDeMensajesCliente busDeMensajesCliente)
         {
             this.estRepo = estRepo;
             this.mapper = mapper;
+            this.campusHistorialCliente = campusHistorialCliente;
+            this.busDeMensajesCliente = busDeMensajesCliente;
         }
         [HttpGet]
         public ActionResult<IEnumerable<EstudianteReadDTO>> getestudiantes()
@@ -35,13 +44,33 @@ namespace NuevoProyectoRESTfulAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult<EstudianteReadDTO> setestudiante(EstudianteCreateDTO estCreateDTO)
+        public async Task<ActionResult<EstudianteReadDTO>> setestudiante(EstudianteCreateDTO estCreateDTO)
         {
             Estudiante estudiante = mapper.Map<Estudiante>(estCreateDTO);
             estRepo.AddEstudiante(estudiante);
             estRepo.Guardar();
             EstudianteReadDTO estRetorno = mapper.Map<EstudianteReadDTO>(estudiante);
-            return CreatedAtRoute(nameof(getestudiante), new { ci = estRetorno.ci}, estRetorno);
+            try
+            {
+                await campusHistorialCliente.ComunicarseConCampus(estRetorno);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Ocurrió un error al comunicarse con Campus de forma sincronizada: {e.Message}");
+            }
+
+            //Usando RabbitMQ
+            try
+            {
+                var estudiantePublisherDTO = mapper.Map<EstudiantePublisherDTO>(estRetorno);
+                estudiantePublisherDTO.tipoEvento = "estudiante_publicado";
+                busDeMensajesCliente.PublicarNuevoEstudiante(estudiantePublisherDTO);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Ocurrió un error al tratar de publicar: { e.Message}");
+            }
+            return CreatedAtRoute(nameof(getestudiante), new { ci = estRetorno.ci }, estRetorno);
         }
 
         [HttpPut("{ci}")]

@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Campus.Conexion;
+using Campus.Eventos;
+using Campus.ComunicacionAsync;
 
 namespace Campus
 {
@@ -31,7 +33,9 @@ namespace Campus
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddDbContext<CampusDbContext>(op => op.UseInMemoryDatabase("miDb"));
             services.AddScoped<IPerfilRepository, ImplPerfilRepository>();
+            services.AddSingleton<IProcesadorDeEventos, ProcesadorDeEventos>();
             services.AddControllers();
+            services.AddHostedService<BusDeMensajesSuscriptor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Newtonsoft.Json.Serialization;
 using NuevoProyectoRESTfulAPI.ComunicacionSync.Http;
+using NuevoProyectoRESTfulAPI.ComunicacionAsync;
 
 namespace NuevoProyectoRESTfulAPI
 {
@@ -50,6 +51,7 @@ namespace NuevoProyectoRESTfulAPI
             services.AddControllers().AddNewtonsoftJson(
                     s => s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver()
                 );
+            services.AddSingleton<IBusDeMensajesCliente, ImplBusDeMensajesCliente>();
             services.AddScoped<IEstudianteRepository, ImplEstudianteRepository>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }

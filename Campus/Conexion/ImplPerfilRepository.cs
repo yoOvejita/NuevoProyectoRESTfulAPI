@@ -59,5 +59,10 @@ namespace Campus.Conexion
         {
             return (contexto.SaveChanges() >= 0);
         }
+
+        public bool ExisteEstudianteForaneo(int fci)
+        {
+            return contexto.Estudiantes.Any(es => es.fci == fci);
+        }
     }
 }

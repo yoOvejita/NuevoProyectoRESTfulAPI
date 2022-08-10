@@ -12,6 +12,7 @@ namespace NuevoProyectoRESTfulAPI.DTOperfiles
             CreateMap<EstudianteCreateDTO, Estudiante>();
             CreateMap<EstudianteUpdateDTO, Estudiante>();
             CreateMap<Estudiante, EstudianteUpdateDTO>();
+            CreateMap<EstudianteReadDTO, EstudiantePublisherDTO>();
         }
     }
 }

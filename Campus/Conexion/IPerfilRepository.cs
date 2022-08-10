@@ -9,6 +9,7 @@ namespace Campus.Conexion
         IEnumerable<Estudiante> GetEstudiantes();
         void CrearEstudiante(Estudiante est);
         bool ExisteEstudiante(int ci);
+        bool ExisteEstudianteForaneo(int fci);
 
         //Para perfiles
         Perfil GetPerfil(int idperfil, int ci);
