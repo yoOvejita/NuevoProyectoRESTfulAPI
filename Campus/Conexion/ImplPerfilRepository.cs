@@ -23,7 +23,7 @@ namespace Campus.Conexion
         }
         public bool ExisteEstudiante(int ci)
         {
-            return contexto.Estudiantes.Where(es => es.ci == ci).First() != null;
+            return contexto.Estudiantes.Any(es => es.ci == ci);//más corto
         }
 
         public IEnumerable<Estudiante> GetEstudiantes()
